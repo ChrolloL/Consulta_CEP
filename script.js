@@ -1,18 +1,32 @@
 // Lucas Batista e Felipe Sella
-const cep = document.getElementById('cep')
-const end = document.getElementById('endereco')
-const bairro = document.getElementById('bairro')
-const cidade = document.getElementById('cidade')
-const estado = document.getElementById('estado')
+function limparFormulario(endereco) {
+    document.getElementById('endereco').value=''
+    document.getElementById('bairro').value=''
+    document.getElementById('cidade').value=''
+    document.getElementById('estado').value=''
+}
 
-cep.addEventListener('focusout', () => {
-    if (cep.value.length == 8) { 
-        let valor = `https://viacep.com.br/ws/${cep.value}/json/`
-        $.getJSON(valor, function(result){
-            end.value = result.logradouro
-            bairro.value = result.bairro
-            cidade.value = result.localidade
-            estado.value = result.uf
-        });
-    } else { alert('CEP Inválido. Digite apenas números!')}
-})
+function preencherFormulario(endereco) {
+    document.getElementById('endereco').value = endereco.logradouro
+    document.getElementById('bairro').value = endereco.bairro
+    document.getElementById('cidade').value = endereco.localidade
+    document.getElementById('estado').value = endereco.uf
+}
+
+async function pesquisarCep () {
+    limparFormulario()
+    const cep = document.getElementById('cep').value.replace('-', '')
+    console.log(cep)
+    if (cep.length == 8) {
+       const url = `https://viacep.com.br/ws/${cep}/json/`
+        const dados = await fetch(url)
+        const endereco = await dados.json()
+        console.log(dados)
+        preencherFormulario(endereco) 
+    } else {
+        alert('CEP Inválido!')
+    }
+    
+}
+
+document.getElementById('cep').addEventListener('focusout', pesquisarCep)
